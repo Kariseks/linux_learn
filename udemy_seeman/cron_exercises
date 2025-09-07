@@ -1,0 +1,23 @@
+
+#variables
+
+PATH=':/bin:/usr/bin'
+SHELL='/usr/bin/bash'
+MAILTO='lorakkari5@gmail.com'
+
+cron_scripts='/home/karol/scripts/cron'
+
+#warning for user, that he is using an exercise crontab
+
+*/5 * * * * zenity --warning --text "You're using test crontab" > /dev/null
+ 
+#exercise pinging google every 2 minutes
+output_file=/tmp/cron_exercise_1
+15-25/2 * * * * ping ping google.com >> ${output_file} && echo &(date) >> ${outputfile}
+
+#exercise executing a script and sending an email wit execution status
+
+*/5 */2 * * * ${cron_scripts}/gen_logfiles.sh
+
+
+#exercise 3 compressing old log file (output from previous exercise )
