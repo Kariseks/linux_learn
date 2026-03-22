@@ -59,5 +59,4 @@ Filtrowanie historii komend (szukanie komendy dockera, której zapomniałeś):
 
 ---
 
-> 💡 **Wskazówka:** Aby poznać wszystkie możliwości tego narzędzia, wpisz `man grep` w swoim terminalu.
-EOF
+
