@@ -13,3 +13,17 @@ echo "BASH variable value:=${bash_var}"
 if [[  -z "${bash_var}" ]]; then
     echo "bash_var is empty because child process inherit only environment variables";
 fi   
+
+empty_var=""
+
+if [[  -z "${empty_var+x}" ]]; then
+    echo '[[  -z "${empty_var+x}" ]] has treated empty var as non existing';
+else
+    echo '[[  -z "${empty_var+x}" ]] has treated empty var as existing variable';
+fi
+
+if [[  -z "${non_var+x}" ]]; then
+    echo 'non_var is a non existing variable';
+else
+        echo 'non_var is a a existing variable';
+fi
