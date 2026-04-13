@@ -1,0 +1,90 @@
+\documentclass[12pt,a4paper]{article}
+
+% --- Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{tcolorbox}
+\usepackage{amsmath}
+\usepackage{fancyhdr}
+
+% --- Code Style Definition ---
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{bashstyle}{
+	backgroundcolor=\color{backcolour},   
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{magenta},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\ttfamily\small,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	numbers=left,                    
+	numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2,
+	language=bash
+}
+
+\lstset{style=bashstyle}
+
+% --- Header and Footer ---
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Mastering Bash Loops}
+\lhead{co by tutuaj}
+\rfoot{Page \thepage}
+
+% --- Custom Commands ---
+\newcommand{\bashcmd}[1]{\texttt{\textbf{#1}}}
+
+% --- Document Content ---
+\title{
+	\vspace{2cm}
+	\textbf{\Huge Mastering Bash}\\
+	\large Tricks and Gatcha for Bash scripting
+}
+\author{Karol Gąsior}
+\date{\today}
+
+\begin{document}
+	
+	\maketitle
+	\vfill
+	\begin{abstract}
+		This document contains noticed tricks and traps in bash scripting
+	\end{abstract}
+	\vfill
+	\newpage
+	
+	\tableofcontents
+	\newpage
+	
+	\section{Introduction to Looping in Bash}
+	
+	\begin{itemize}
+		\item Coping a whole folder content
+			\begin{lstlisting}[caption=Coping a whole directory content with hidden files, language=bash]
+			cp "${source}"/{,.}* "${destination}" \end{lstlisting}
+		\item Try to process data in bulk using a single \texttt{awk} script rather than a shell loop if the dataset is huge.
+	\end{itemize}
+	
+
+
+	
+
+\end{document}

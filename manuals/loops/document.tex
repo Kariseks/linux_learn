@@ -1,0 +1,379 @@
+\documentclass[12pt,a4paper]{article}
+
+% --- Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{tcolorbox}
+\usepackage{amsmath}
+\usepackage{fancyhdr}
+
+% --- Code Style Definition ---
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{bashstyle}{
+	backgroundcolor=\color{backcolour},   
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{magenta},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\ttfamily\small,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	numbers=left,                    
+	numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2,
+	language=bash
+}
+
+\lstset{style=bashstyle}
+
+% --- Header and Footer ---
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Mastering Bash Loops}
+\lhead{Advanced Scripting Tutorial}
+\rfoot{Page \thepage}
+
+% --- Custom Commands ---
+\newcommand{\bashcmd}[1]{\texttt{\textbf{#1}}}
+
+% --- Document Content ---
+\title{
+	\vspace{2cm}
+	\textbf{\Huge Mastering Bash Loops}\\
+	\large A Comprehensive Guide for Advanced Scripting Specialists
+}
+\author{Advanced Shell Scripting Department}
+\date{\today}
+
+\begin{document}
+	
+	\maketitle
+	\vfill
+	\begin{abstract}
+		This document serves as an extensive tutorial on loop constructs within the Bourne Again Shell (Bash). Designed for students specializing in systems administration and DevOps, it covers fundamental syntax, advanced iteration patterns, performance optimization, and industry-standard best practices. By the end of this guide, the reader will be equipped to handle complex data processing tasks using efficient looping mechanisms.
+	\end{abstract}
+	\vfill
+	\newpage
+	
+	\tableofcontents
+	\newpage
+	
+	\section{Introduction to Looping in Bash}
+	In the world of Bash scripting, automation is the primary objective. Loops are the backbone of automation, allowing a script to execute a block of code multiple times. Whether you are processing thousands of log files, monitoring system resources, or managing user accounts, understanding how to control the flow of execution through loops is essential.
+	
+	In Bash, we primarily deal with three types of loops:
+	\begin{itemize}
+		\item \textbf{for}: Used when the number of iterations is known or defined by a list.
+		\item \textbf{while}: Used to execute code as long as a certain condition remains true.
+		\item \textbf{until}: Used to execute code until a certain condition becomes true (the inverse of while).
+	\end{itemize}
+	
+	\section{The \texttt{for} Loop: Syntax and Variations}
+	The \bashcmd{for} loop is perhaps the most versatile tool in a scripter's arsenal. It can iterate over strings, arrays, command outputs, and numeric ranges.
+	
+	\subsection{List-based \texttt{for} Loop}
+	The most common usage is iterating over a predefined list of items.
+	
+	\begin{lstlisting}[caption=Basic for loop example]
+		#!/bin/bash
+		# Iterating over a simple list
+		for server in web01 web02 db01 backup01; do
+		echo "Checking status of: $server"
+		ping -c 1 "$server" > /dev/null
+		if [ $? -eq 0 ]; then
+		echo "$server is UP"
+		else
+		echo "$server is DOWN"
+		fi
+		done
+	\end{lstlisting}
+	
+	\subsection{Iterating Over Ranges (Brace Expansion)}
+	Modern Bash (v3.0+) supports brace expansion, which is significantly faster than calling the external \texttt{seq} command.
+	
+	\begin{lstlisting}[caption=Range-based iteration]
+		# Basic range 1 to 5
+		for i in {1..5}; do
+		echo "Iteration $i"
+		done
+		
+		# Range with step (Bash 4.0+) - e.g., every second number
+		for i in {0..10..2}; do
+		echo "Even number: $i"
+		done
+	\end{lstlisting}
+	
+	\subsection{C-Style \texttt{for} Loop}
+	For those coming from a C, C++, or Java background, Bash provides a syntax that allows for arithmetic manipulation of the counter.
+	
+	\begin{lstlisting}[caption=C-style for loop]
+		for (( i=0; i<10; i++ )); do
+		echo "Counter: $i"
+		done
+	\end{lstlisting}
+	
+	\subsection{Iterating Over Command Output}
+	\textbf{Warning:} This is a common pattern but can be dangerous with filenames containing spaces. 
+	
+	\begin{lstlisting}[caption=Iterating over files (The Globbing Way)]
+		# Best practice: Use globbing, not 'ls'
+		for file in *.log; do
+		echo "Processing $file"
+		# Always quote variables to handle spaces
+		mv "$file" "${file}.bak"
+		done
+	\end{lstlisting}
+	
+	\newpage
+	\section{The \texttt{while} and \texttt{until} Loops}
+	
+	\subsection{The \texttt{while} Loop}
+	The \bashcmd{while} loop evaluates a condition before each iteration. If the condition is true (returns exit code 0), the body executes.
+	
+	\begin{lstlisting}[caption=Standard while loop]
+		#!/bin/bash
+		count=1
+		while [ $count -le 5 ]; do
+		echo "Count is $count"
+		((count++))
+		done
+	\end{lstlisting}
+	
+	\subsection{The \texttt{until} Loop}
+	The \bashcmd{until} loop is the logical opposite of \texttt{while}. It runs as long as the condition is \textbf{false}.
+	
+	\begin{lstlisting}[caption=Using until for service monitoring]
+		# Wait until a specific file exists
+		until [ -f /tmp/ready.txt ]; do
+		echo "Waiting for system readiness..."
+		sleep 2
+		done
+		echo "System is ready!"
+	\end{lstlisting}
+	
+	\subsection{Reading Files Line by Line}
+	One of the most powerful uses of the \texttt{while} loop in Bash is reading the contents of a file or stream.
+	
+	\begin{lstlisting}[caption=The 'read' loop pattern]
+		#!/bin/bash
+		FILE="/etc/passwd"
+		
+		# Standard way to read a file
+		while IFS=: read -r username password uid gid info home shell; do
+		echo "User $username uses $shell"
+		done < "$FILE"
+	\end{lstlisting}
+	\textit{Note: \texttt{IFS=:} sets the Internal Field Separator to a colon. \texttt{-r} prevents backslash escapes from being interpreted.}
+	
+	\newpage
+	\section{Loop Control: \texttt{break} and \texttt{continue}}
+	Sometimes you need to exit a loop prematurely or skip the rest of the current iteration.
+	
+	\subsection{The \texttt{break} Statement}
+	Exits the loop entirely. Useful for searching or handling errors.
+	
+	\begin{lstlisting}[caption=Using break to exit early]
+		for i in {1..100}; do
+		if [ $i -eq 13 ]; then
+		echo "Found the target, stopping."
+		break
+		fi
+		echo "Scanning: $i"
+		done
+	\end{lstlisting}
+	
+	\subsection{The \texttt{continue} Statement}
+	Skips the remaining commands in the current iteration and moves to the next one.
+	
+	\begin{lstlisting}[caption=Using continue to skip items]
+		for file in *; do
+		if [ -d "$file" ]; then
+		# Skip directories
+		continue
+		fi
+		echo "Processing file: $file"
+		done
+	\end{lstlisting}
+	
+	\subsection{Breaking Out of Nested Loops}
+	You can provide an integer argument to \texttt{break} or \texttt{continue} to specify how many levels of nesting to jump out of.
+	
+	\begin{lstlisting}[caption=Breaking nested loops]
+		for i in {1..3}; do
+		for j in {1..3}; do
+		if [ $i -eq 2 ] && [ $j -eq 2 ]; then
+		break 2  # Breaks both loops
+		fi
+		echo "i:$i j:$j"
+		done
+		done
+	\end{lstlisting}
+	
+	\newpage
+	\section{Best Practices for Robust Scripting}
+	
+	\subsection{Always Quote Your Variables}
+	Variable expansion within loops is a primary source of bugs, especially when dealing with paths.
+	
+	\begin{tcolorbox}[colback=red!5,colframe=red!75!black,title=The Golden Rule]
+		Always use \texttt{"\$variable"} instead of \texttt{\$variable} inside your loops to prevent Word Splitting and Globbing issues.
+	\end{tcolorbox}
+	
+	\subsection{Avoid \texttt{for i in \$(ls ...)}}
+	Using the output of \texttt{ls} in a loop is a "Bash Antipattern." It fails on filenames with spaces or newlines.
+	\begin{itemize}
+		\item \textbf{Bad:} \texttt{for f in \$(ls *.txt); do ...}
+		\item \textbf{Good:} \texttt{for f in *.txt; do ...}
+	\end{itemize}
+	
+	\subsection{Input/Output Redirection Efficiency}
+	When processing files, it is more efficient to redirect input once at the \texttt{done} keyword than opening the file multiple times inside the loop.
+	
+	\begin{lstlisting}[caption=Efficient redirection]
+		# Efficient
+		while read -r line; do
+		echo "Line: $line"
+		done < input.txt > output.txt
+	\end{lstlisting}
+	
+	\subsection{Use Built-in Arithmetic}
+	Instead of calling \texttt{expr} or \texttt{let}, use the \texttt{(( ... ))} syntax for incrementing variables. It is faster as it is handled by the shell itself.
+	
+	\newpage
+	\section{Advanced Tricks and Techniques}
+	
+	\subsection{Infinite Loops for Daemons}
+	If you are writing a monitoring script that should run forever:
+	
+	\begin{lstlisting}[caption=The infinite loop]
+		while true; do
+		check_system_health
+		sleep 60
+		done
+	\end{lstlisting}
+	
+	\subsection{Parallel Execution in Loops}
+	Bash loops are normally sequential. However, you can use the \texttt{\&} operator to run iterations in the background.
+	
+	\begin{lstlisting}[caption=Parallel background processing]
+		for job in {1..10}; do
+		(
+		echo "Starting job $job"
+		sleep $((RANDOM % 5))
+		echo "Job $job finished"
+		) &
+		done
+		wait
+		echo "All jobs completed."
+	\end{lstlisting}
+	\textit{The \texttt{wait} command ensures the script doesn't end before the background jobs finish.}
+	
+	\subsection{Creating Progress Bars}
+	Loops can be used to provide visual feedback for long-running processes.
+	
+	\begin{lstlisting}[caption=Simple progress bar]
+		echo -n "Loading: "
+		for i in {1..20}; do
+		echo -n "#"
+		sleep 0.1
+		done
+		echo " Done!"
+	\end{lstlisting}
+	
+	\subsection{The \texttt{select} Loop}
+	Bash provides a special loop for creating simple text menus easily.
+	
+	\begin{lstlisting}[caption=Interactive menu with select]
+		PS3="Please select an option: "
+		options=("Status" "Restart" "Quit")
+		select opt in "${options[@]}"; do
+		case $opt in
+		"Status") uptime ;;
+		"Restart") echo "Restarting..." ;;
+		"Quit") break ;;
+		*) echo "Invalid option $REPLY" ;;
+		esac
+		done
+	\end{lstlisting}
+	
+	\newpage
+	\section{Performance Optimization}
+	
+	\subsection{Subshells vs. Current Shell}
+	A loop inside a pipe \texttt{cat file | while read...} creates a subshell. Variables modified inside this loop will not be available outside of it.
+	
+	\begin{lstlisting}[caption=Subshell variable pitfall]
+		sum=0
+		cat numbers.txt | while read n; do
+		((sum += n))
+		done
+		echo "Sum is $sum" # WRONG: Will output 0
+	\end{lstlisting}
+	
+	To fix this, use \textbf{Process Substitution}:
+	\begin{lstlisting}[caption=Fixing subshell issues]
+		sum=0
+		while read n; do
+		((sum += n))
+		done < <(cat numbers.txt)
+		echo "Sum is $sum" # CORRECT
+	\end{lstlisting}
+	
+	\subsection{Minimizing External Calls}
+	Calling \texttt{grep}, \texttt{sed}, or \texttt{awk} inside a loop that runs 10,000 times will significantly slow down your script. 
+	\begin{itemize}
+		\item Try to use Bash Parameter Expansion \texttt{\$\{var\#\#*.\}} instead of \texttt{basename} or \texttt{cut}.
+		\item Try to process data in bulk using a single \texttt{awk} script rather than a shell loop if the dataset is huge.
+	\end{itemize}
+	
+	\section{Real-World Project: Log Rotator}
+	To conclude this tutorial, here is a practical script that utilizes several loop concepts to rotate log files.
+	
+	\begin{lstlisting}[caption=Final Project: Simple Log Rotator]
+		#!/bin/bash
+		LOG_DIR="./logs"
+		MAX_LOGS=5
+		
+		# Ensure directory exists
+		mkdir -p "$LOG_DIR"
+		
+		# Step 1: Process current logs
+		for log_file in "$LOG_DIR"/*.log; do
+		[ -e "$log_file" ] || continue # Handle empty directory
+		
+		size=$(stat -c%s "$log_file")
+		if [ $size -gt 1024 ]; then
+		echo "Rotating $log_file..."
+		mv "$log_file" "$log_file.1"
+		fi
+		done
+		
+		# Step 2: Manage old versions using a C-style loop
+		for (( i=$MAX_LOGS; i>1; i-- )); do
+		prev=$((i-1))
+		if [ -f "$LOG_DIR/app.log.$prev" ]; then
+		mv "$LOG_DIR/app.log.$prev" "$LOG_DIR/app.log.$i"
+		fi
+		done
+	\end{lstlisting}
+	
+	\section{Summary}
+	Mastering loops in Bash requires practice and an understanding of how the shell interprets strings and commands. By following the best practices outlined in this document—specifically regarding quoting, variable handling, and avoiding unnecessary subshells—you will write scripts that are not only functional but also secure and efficient.
+	
+\end{document}

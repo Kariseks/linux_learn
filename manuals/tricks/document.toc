@@ -1,0 +1,2 @@
+\babel@toc {english}{}\relax 
+\contentsline {section}{\numberline {1}Introduction to Looping in Bash}{3}{section.1}%
